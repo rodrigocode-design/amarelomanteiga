@@ -373,7 +373,7 @@ var DOMINIO = "@amarelomanteiga.com.br";
 
 var CHAVE = "amarelo-manteiga-v2";
 var LISTAS = ["insumos","produtos","vendas","compras","fixas","avulsas","log"];
-var dados = { insumos:[], produtos:[], vendas:[], compras:[], fixas:[], avulsas:[], log:[] };
+var dados = { insumos:[], produtos:[], vendas:[], compras:[], fixas:[], avulsas:[], log:[], removidos:[] };
 var sb = null, usuario = null, salvando = false, pendente = false;
 var ficha = [];
 
@@ -397,6 +397,7 @@ function cache(gravando){
 }
 cache(false);
 LISTAS.forEach(function(k){ if(!Array.isArray(dados[k])) dados[k] = []; });
+if(!Array.isArray(dados.removidos)) dados.removidos = [];
 
 /* ---------- quem está usando ---------- */
 function quemSou(){
@@ -409,8 +410,26 @@ function anotar(acao, alvo){
 }
 
 /* ---------- gravação compartilhada ---------- */
+/* Marca ids como excluídos, para a mesclagem não trazê-los de volta. */
+function excluir(ids){
+  ids.forEach(function(i){ if(dados.removidos.indexOf(i) === -1) dados.removidos.push(i); });
+  if(dados.removidos.length > 3000) dados.removidos = dados.removidos.slice(-3000);
+  limparRemovidos();
+}
+function limparRemovidos(){
+  var fora = {};
+  dados.removidos.forEach(function(i){ fora[i] = true; });
+  LISTAS.forEach(function(nome){
+    if(nome === "log") return;
+    dados[nome] = dados[nome].filter(function(it){ return it && !fora[it.id]; });
+  });
+}
+
 function mesclar(remoto){
   if(!remoto) return;
+  (remoto.removidos || []).forEach(function(i){
+    if(dados.removidos.indexOf(i) === -1) dados.removidos.push(i);
+  });
   LISTAS.forEach(function(nome){
     var la = remoto[nome] || [], aqui = dados[nome] || [];
     var vistos = {}, junto = [];
@@ -422,6 +441,7 @@ function mesclar(remoto){
     dados.log.sort(function(a,b){ return a.em < b.em ? 1 : -1; });
     dados.log = dados.log.slice(0,300);
   }
+  limparRemovidos();
 }
 
 function gravar(){
@@ -456,6 +476,8 @@ function abrir(u){
     if(r.data && r.data.dados){
       var v = r.data.dados;
       LISTAS.forEach(function(k){ dados[k] = Array.isArray(v[k]) ? v[k] : []; });
+      dados.removidos = Array.isArray(v.removidos) ? v.removidos : [];
+      limparRemovidos();
       cache(true); tudo(); estado("sincronizado");
     }else{
       estado("pronto");
@@ -1041,28 +1063,27 @@ document.addEventListener("click", function(ev){
     });
     if(usado && !confirm("Este insumo está em uma receita. Excluir mesmo assim?")) return;
     anotar("excluiu o insumo", (insumoPor(v)||{nome:"?"}).nome);
-    dados.insumos = dados.insumos.filter(function(i){ return i.id !== v; });
-    dados.compras = dados.compras.filter(function(c){ return c.insumoId !== v; });
+    excluir([v].concat(dados.compras.filter(function(c){ return c.insumoId === v; }).map(function(c){ return c.id; })));
     gravar(); tudo(); return;
   }
   if((v = b.getAttribute("data-del-produto"))){
     anotar("excluiu o produto", (produtoPor(v)||{nome:"?"}).nome);
-    dados.produtos = dados.produtos.filter(function(p){ return p.id !== v; });
+    excluir([v]);
     gravar(); tudo(); return;
   }
   if((v = b.getAttribute("data-del-venda"))){
     anotar("excluiu uma venda", "");
-    dados.vendas = dados.vendas.filter(function(x){ return x.id !== v; });
+    excluir([v]);
     gravar(); tudo(); return;
   }
   if((v = b.getAttribute("data-del-fixa"))){
     anotar("excluiu uma despesa fixa", "");
-    dados.fixas = dados.fixas.filter(function(f){ return f.id !== v; });
+    excluir([v]);
     gravar(); tudo(); return;
   }
   if((v = b.getAttribute("data-del-avulsa"))){
     anotar("excluiu um gasto avulso", "");
-    dados.avulsas = dados.avulsas.filter(function(a){ return a.id !== v; });
+    excluir([v]);
     gravar(); tudo(); return;
   }
 });
