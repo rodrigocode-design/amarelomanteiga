@@ -42,12 +42,40 @@ img{display:block;max-width:100%}
 header{background:var(--surface);border-bottom:1px solid var(--rule);position:sticky;top:env(safe-area-inset-top,0px);z-index:30}
 .top{display:flex;align-items:center;justify-content:space-between;gap:1rem;height:62px}
 .logo{display:flex;align-items:center;gap:.65rem;min-width:0}
-.logo img{width:44px;height:auto;flex:none}
+.logo img{width:44px;max-width:none;height:auto;flex:none}
 .logo b{font-family:"Bodoni Moda",serif;font-size:1rem;white-space:nowrap}
 .logo small{display:block;font-size:.7rem;color:var(--muted)}
-.acoes{text-align:right;font-size:.78rem;color:var(--muted)}
-.acoes button{background:none;border:0;color:var(--muted);font:inherit;font-size:.78rem;cursor:pointer;text-decoration:underline;padding:0}
-.acoes button:hover{color:var(--text)}
+.acoes{display:flex;align-items:center;gap:.45rem}
+
+/* selo de salvamento */
+.selo-estado{display:inline-flex;align-items:center;gap:.4rem;font:inherit;font-size:.78rem;font-weight:600;
+  border-radius:999px;padding:.32rem .7rem;border:1px solid var(--rule);background:var(--surface);color:var(--muted);cursor:default;white-space:nowrap}
+.selo-estado .ponto{width:8px;height:8px;border-radius:50%;background:var(--muted);flex:none}
+.selo-estado[data-e="salvo"]{color:var(--verde);border-color:color-mix(in srgb,var(--verde) 35%,transparent);background:color-mix(in srgb,var(--verde) 8%,var(--surface))}
+.selo-estado[data-e="salvo"] .ponto{background:var(--verde)}
+.selo-estado[data-e="salvando"],.selo-estado[data-e="carregando"]{color:var(--ouro);border-color:color-mix(in srgb,var(--ouro) 40%,transparent)}
+.selo-estado[data-e="salvando"] .ponto,.selo-estado[data-e="carregando"] .ponto{background:var(--manteiga);animation:pulsa 1s ease-in-out infinite}
+.selo-estado[data-e="erro"]{color:#fff;background:var(--vermelho);border-color:var(--vermelho);cursor:pointer}
+.selo-estado[data-e="erro"] .ponto{background:#fff}
+@keyframes pulsa{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* botões em pílula */
+.pilula{display:inline-flex;align-items:center;gap:.4rem;font:inherit;font-size:.84rem;font-weight:600;cursor:pointer;
+  border-radius:999px;padding:.42rem .9rem;border:1.5px solid var(--rule);background:var(--surface);color:var(--text);
+  transition:background .15s ease,border-color .15s ease,color .15s ease;white-space:nowrap}
+.pilula:hover{border-color:var(--ouro);background:var(--surface-2)}
+.pilula.fantasma{border-color:transparent;color:var(--muted);background:none}
+.pilula.fantasma:hover{color:var(--text);background:var(--surface-2);border-color:transparent}
+.pilula.cheia{background:var(--choco);border-color:var(--choco);color:#FDF6E3}
+.pilula.cheia:hover{background:#59381A;border-color:#59381A}
+.pilula svg{flex:none}
+
+/* faixa da senha provisória */
+.aviso-senha{background:color-mix(in srgb,var(--manteiga) 28%,var(--surface));border-bottom:1px solid color-mix(in srgb,var(--ouro) 45%,transparent)}
+.aviso-senha[hidden]{display:none}
+.aviso-in{display:flex;align-items:center;gap:.7rem;padding:.65rem 0}
+.aviso-ico{color:var(--ouro);display:flex}
+.aviso-txt{flex:1;font-size:.9rem}
 
 nav.abas{background:var(--surface);border-bottom:1px solid var(--rule);overflow-x:auto}
 .abas-in{display:flex;gap:.15rem}
@@ -162,7 +190,8 @@ nav.abas::-webkit-scrollbar{display:none}
   .btn-mini{min-height:40px;padding:.4rem .8rem}
   .aba{padding:.85rem 1rem}
   .apagar{min-height:40px;padding:.4rem .6rem}
-  .acoes button{padding:.35rem .2rem;font-size:.84rem}
+  .pilula{min-height:42px;padding:.5rem 1rem}
+  .selo-estado{min-height:34px}
 }
 
 /* tablet em pé (iPad) */
@@ -187,10 +216,21 @@ nav.abas::-webkit-scrollbar{display:none}
   .l3 .full,.l2 .full{grid-column:1/-1}
   .logo small{display:none}
   .logo b{font-size:.95rem}
+}
+@media (max-width:400px){
+  .logo b{display:none}
+  .acoes{gap:.3rem}
   .so-grande{display:none}
-  .acoes{line-height:1.25;white-space:nowrap}
-  .acoes button{margin-left:.35rem}
-  #estado{font-size:.7rem}
+  .selo-estado[data-e="erro"] #estado-txt::after{content:" ↻";font-weight:700}
+  #cartoes-despesa{grid-template-columns:1fr 1fr!important}
+  #cartoes-despesa .cartao:last-child{grid-column:1/-1}
+  .pilula .rot{display:none}
+  .pilula.fantasma{padding:.5rem .6rem}
+  .pilula{padding:.5rem .8rem}
+  .selo-estado{font-size:.72rem;padding:.28rem .55rem}
+  .aviso-in{flex-wrap:wrap;gap:.5rem .6rem}
+  .aviso-txt{font-size:.86rem;flex-basis:calc(100% - 2.2rem)}
+  .aviso-in .pilula{width:100%;justify-content:center}
   /* botão principal ocupa a largura toda, fácil de acertar com o dedão */
   .bloco > .btn-ouro{width:100%}
 
@@ -252,6 +292,16 @@ nav.abas::-webkit-scrollbar{display:none}
   </div>
 </div></div>
 
+<div class="modal" id="m-sair" hidden><div class="modal-in">
+  <h3 id="ms-tit">Ainda salvando</h3>
+  <p class="dica" id="ms-txt" style="margin:.35rem 0 0"></p>
+  <p class="erro" id="ms-msg"></p>
+  <div style="display:flex;gap:.6rem;margin-top:1.1rem">
+    <button class="btn btn-ouro" id="ms-salvar" type="button" style="flex:1">Salvar e sair</button>
+    <button class="btn" data-fechar="m-sair" type="button">Ficar</button>
+  </div>
+</div></div>
+
 <div class="modal" id="m-log" hidden><div class="modal-in">
   <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem">
     <h3>Registros</h3>
@@ -267,10 +317,11 @@ nav.abas::-webkit-scrollbar{display:none}
     <div><b>Amarelo Manteiga</b><small>Gestão interna</small></div>
   </div>
   <div class="acoes">
-    <span id="estado">carregando…</span><br>
-    <button id="b-log" type="button" hidden>registros</button>
-    <button id="b-senha" type="button" hidden><span class="so-grande">trocar </span>senha</button>
-    <button id="b-sair" type="button" hidden>sair</button>
+    <button id="estado" class="selo-estado" data-e="carregando" type="button" disabled>
+      <span class="ponto" aria-hidden="true"></span><span id="estado-txt">Carregando…</span>
+    </button>
+    <button id="b-log" class="pilula fantasma" type="button" hidden title="Registros" aria-label="Registros"><svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg><span class="rot">Registros</span></button>
+    <button id="b-sair" class="pilula" type="button" hidden><svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4"/><path d="M16 16l4-4-4-4"/><path d="M20 12H10"/></svg><span>Sair</span></button>
   </div>
 </div></header>
 
@@ -282,6 +333,14 @@ nav.abas::-webkit-scrollbar{display:none}
   <button class="aba" role="tab" aria-selected="false" data-p="insumos">Insumos e compras</button>
   <button class="aba" role="tab" aria-selected="false" data-p="despesas">Despesas</button>
 </div></nav>
+
+<div class="aviso-senha" id="aviso-senha" hidden>
+  <div class="wrap aviso-in">
+    <span class="aviso-ico"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="15" r="4"/><path d="M11 12l9-9"/><path d="M17 6l3 3"/><path d="M15 8l2 2"/></svg></span>
+    <span class="aviso-txt">Você ainda está com a <strong>senha provisória</strong>. Troque para proteger seu acesso.</span>
+    <button class="pilula cheia" id="b-senha" type="button">Trocar agora</button>
+  </div>
+</div>
 
 <main class="wrap">
 
@@ -501,7 +560,7 @@ var DOMINIO = "@amarelomanteiga.com.br";
 var CHAVE = "amarelo-manteiga-v2";
 var LISTAS = ["insumos","produtos","vendas","compras","fixas","avulsas","clientes","log"];
 var dados = { insumos:[], produtos:[], vendas:[], compras:[], fixas:[], avulsas:[], clientes:[], log:[], removidos:[] };
-var sb = null, usuario = null, salvando = false, pendente = false;
+var sb = null, usuario = null;
 var ficha = [];
 
 var $ = function(i){ return document.getElementById(i); };
@@ -519,7 +578,15 @@ function num(id){
   return isFinite(n) ? n : NaN;
 }
 var dataBR = function(iso){ return iso ? iso.split("-").reverse().join("/") : ""; };
-function estado(t){ $("estado").textContent = t; }
+var TEXTOS = { carregando:"Carregando…", salvando:"Salvando…", salvo:"Salvo",
+  erro:'Não salvo<span class="so-grande"> · tentar de novo</span>', local:"Só neste aparelho", "erro-carregar":"Erro ao carregar" };
+function estado(e){
+  var el = $("estado");
+  el.setAttribute("data-e", e);
+  $("estado-txt").innerHTML = TEXTOS[e] || esc(e);
+  el.disabled = e !== "erro";
+  el.title = e === "erro" ? "Toque para tentar salvar de novo" : "";
+}
 function erro(el,msg){ var e=$(el); e.className="erro"; e.textContent=msg; return false; }
 
 try{ $("porta-logo").src = document.querySelector(".logo img").src; }catch(e){}
@@ -580,43 +647,71 @@ function mesclar(remoto){
   limparRemovidos();
 }
 
-function gravar(){
-  cache(true);
-  if(!sb || !usuario) return;
-  if(salvando){ pendente = true; return; }
-  salvando = true;
-  estado("salvando…");
-  sb.from("gestao").select("dados").eq("id","confeitaria").maybeSingle().then(function(r){
-    if(!r.error && r.data && r.data.dados) mesclar(r.data.dados);
+/* Cada gravação entra numa fila. "emFila" conta as que ainda não terminaram;
+   "falhou" fica ligado até uma gravação completa dar certo. */
+var fila = Promise.resolve(true), emFila = 0, falhou = false;
+
+function temPendencia(){ return emFila > 0 || falhou; }
+
+function salvarAgora(){
+  return sb.from("gestao").select("dados").eq("id","confeitaria").maybeSingle().then(function(r){
+    if(r.error) throw r.error;
+    if(r.data && r.data.dados) mesclar(r.data.dados);
     return sb.from("gestao").upsert({
       id:"confeitaria", dados:dados,
       atualizado_em:new Date().toISOString(), atualizado_por:quemSou()
     }, { onConflict:"id" });
   }).then(function(r){
-    if(r && r.error){ estado("erro ao salvar"); console.error(r.error); }
-    else { estado("salvo"); cache(true); tudo(); }
-  }, function(e){ estado("sem conexão"); console.error(e); }).then(function(){
-    salvando = false;
-    if(pendente){ pendente = false; gravar(); }
+    if(r && r.error) throw r.error;
+    cache(true); tudo();
+    return true;
+  }).catch(function(e){
+    console.error(e);
+    return false;
   });
 }
+
+function gravar(){
+  cache(true);
+  if(!sb || !usuario) return Promise.resolve(true);
+  emFila++; falhou = false;
+  estado("salvando");
+  fila = fila.then(salvarAgora).then(function(ok){
+    emFila--;
+    if(!ok) falhou = true;
+    estado(falhou ? "erro" : emFila > 0 ? "salvando" : "salvo");
+    return !falhou;
+  });
+  return fila;
+}
+
+/* tocar no selo vermelho tenta de novo; voltar a internet também */
+$("estado").addEventListener("click", function(){ if(falhou) gravar(); });
+window.addEventListener("online", function(){ if(falhou) gravar(); });
+
+/* fechar a aba com algo não salvo: o navegador pede confirmação */
+window.addEventListener("beforeunload", function(e){
+  if(temPendencia()){ e.preventDefault(); e.returnValue = ""; return ""; }
+});
 
 /* ---------- entrada ---------- */
 function abrir(u){
   usuario = u;
   $("porta").hidden = true;
-  ["b-log","b-senha","b-sair"].forEach(function(k){ $(k).hidden = false; });
-  estado("carregando…");
+  ["b-log","b-sair"].forEach(function(k){ $(k).hidden = false; });
+  var meta = u.user_metadata || {};
+  $("aviso-senha").hidden = !!meta.senha_trocada;
+  estado("carregando");
   sb.from("gestao").select("dados").eq("id","confeitaria").maybeSingle().then(function(r){
-    if(r.error){ estado("erro ao carregar"); console.error(r.error); return; }
+    if(r.error){ estado("erro-carregar"); console.error(r.error); return; }
     if(r.data && r.data.dados){
       var v = r.data.dados;
       LISTAS.forEach(function(k){ dados[k] = Array.isArray(v[k]) ? v[k] : []; });
       dados.removidos = Array.isArray(v.removidos) ? v.removidos : [];
       limparRemovidos();
-      cache(true); tudo(); estado("sincronizado");
+      cache(true); tudo(); estado("salvo");
     }else{
-      estado("pronto");
+      estado("salvo");
       var tem = LISTAS.some(function(k){ return dados[k].length; });
       if(tem) gravar();
     }
@@ -625,7 +720,7 @@ function abrir(u){
 
 if(!window.supabase || SUPABASE_URL.indexOf("COLE_AQUI") === 0){
   $("porta").hidden = true;
-  estado("salvo só neste aparelho");
+  estado("local");
 }else{
   sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_CHAVE);
   sb.auth.getSession().then(function(r){
@@ -655,10 +750,45 @@ if(!window.supabase || SUPABASE_URL.indexOf("COLE_AQUI") === 0){
     });
   }
 
-  $("b-sair").addEventListener("click", function(){
+  function sairDeVez(){
     sb.auth.signOut().then(function(){
       try{ localStorage.removeItem(CHAVE); }catch(e){}
       location.reload();
+    });
+  }
+
+  function textoSaida(){
+    if(falhou){
+      $("ms-tit").textContent = "Tem alteração não salva";
+      $("ms-txt").textContent = "A última alteração não chegou ao banco. Confira a internet e toque em Salvar e sair. Se sair agora, ela se perde.";
+    }else{
+      $("ms-tit").textContent = "Ainda salvando";
+      $("ms-txt").textContent = "Espere um instante: a última alteração ainda está sendo enviada.";
+    }
+  }
+
+  $("b-sair").addEventListener("click", function(){
+    if(!temPendencia()) return sairDeVez();
+    textoSaida();
+    erro("ms-msg","");
+    $("m-sair").hidden = false;
+    // se só estava salvando, sai sozinho assim que terminar bem
+    if(!falhou){
+      fila.then(function(ok){
+        if(ok && !temPendencia() && !$("m-sair").hidden) sairDeVez();
+        else if(!$("m-sair").hidden) textoSaida();
+      });
+    }
+  });
+
+  $("ms-salvar").addEventListener("click", function(){
+    var b = $("ms-salvar");
+    b.disabled = true; b.textContent = "Salvando…";
+    gravar().then(function(ok){
+      b.disabled = false; b.textContent = "Salvar e sair";
+      if(ok && !temPendencia()) return sairDeVez();
+      textoSaida();
+      erro("ms-msg","Ainda não conseguimos salvar. Verifique a internet e tente de novo.");
     });
   });
 
@@ -670,12 +800,14 @@ if(!window.supabase || SUPABASE_URL.indexOf("COLE_AQUI") === 0){
     if(a.length < 6) return erro("sn-msg","A senha precisa ter pelo menos 6 caracteres.");
     if(a !== b) return erro("sn-msg","As duas senhas não são iguais.");
     $("sn-salvar").disabled = true; $("sn-salvar").textContent = "Salvando…";
-    sb.auth.updateUser({password:a}).then(function(r){
+    sb.auth.updateUser({password:a, data:{senha_trocada:true}}).then(function(r){
       $("sn-salvar").disabled = false; $("sn-salvar").textContent = "Salvar";
       if(r.error) return erro("sn-msg","Não deu para trocar agora. Tente de novo.");
       $("sn-msg").className = "erro ok";
-      $("sn-msg").textContent = "Senha trocada.";
-      setTimeout(function(){ fechar("m-senha"); }, 1800);
+      $("sn-msg").textContent = "Senha trocada. Pronto, seu acesso é só seu.";
+      anotar("trocou a própria senha", "");
+      gravar();
+      setTimeout(function(){ fechar("m-senha"); $("aviso-senha").hidden = true; }, 1800);
     });
   }
 }
@@ -688,7 +820,7 @@ function fechar(id){
 $("b-senha").addEventListener("click", function(){ $("m-senha").hidden = false; $("sn-a").focus(); });
 $("b-log").addEventListener("click", function(){ desenharLog(); $("m-log").hidden = false; });
 document.addEventListener("keydown", function(e){
-  if(e.key === "Escape"){ fechar("m-senha"); fechar("m-log"); }
+  if(e.key === "Escape"){ fechar("m-senha"); fechar("m-log"); fechar("m-sair"); }
 });
 
 function desenharLog(){
