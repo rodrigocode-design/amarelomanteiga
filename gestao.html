@@ -4,6 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Amarelo Manteiga — Gestão</title>
+<meta name="theme-color" content="#FFFDF5">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Amarelo Manteiga">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="format-detection" content="telephone=no">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,500;6..96,600&family=Karla:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -136,6 +142,85 @@ input,select{font:inherit;font-size:.95rem;color:var(--text);background:var(--bg
 .porta-cx h1{font-size:1.35rem}
 .porta-cx .campo{text-align:left;margin-bottom:.8rem}
 .porta-cx button{width:100%;margin-top:.3rem}
+
+/* ================= toque: iPhone e iPad ================= */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+button,a,input,select,.aba{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+/* 16px impede o zoom automático do iPhone ao tocar num campo */
+input,select{font-size:16px}
+select{-webkit-appearance:none;appearance:none;padding-right:2rem;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237A5F3A' stroke-width='1.6' fill='none'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right .7rem center}
+
+/* abas grudadas logo abaixo do topo */
+nav.abas{position:sticky;top:calc(62px + env(safe-area-inset-top,0px));z-index:29;scrollbar-width:none}
+nav.abas::-webkit-scrollbar{display:none}
+
+@media (pointer:coarse){
+  input,select{min-height:46px}
+  .btn{min-height:46px;padding:.6rem 1.2rem}
+  .btn-mini{min-height:40px;padding:.4rem .8rem}
+  .aba{padding:.85rem 1rem}
+  .apagar{min-height:40px;padding:.4rem .6rem}
+  .acoes button{padding:.35rem .2rem;font-size:.84rem}
+}
+
+/* tablet em pé (iPad) */
+@media (max-width:1024px){
+  .wrap{width:min(1080px,100% - 1.6rem)}
+  .l4{grid-template-columns:1fr 1fr}
+  .l4 .full{grid-column:1/-1}
+}
+
+/* celular */
+@media (max-width:640px){
+  body{font-size:15.5px}
+  .wrap{width:calc(100% - 1.4rem)}
+  main{padding:1.1rem 0 5rem}
+  .tit h2{font-size:1.4rem}
+  .bloco{padding:1rem .95rem;border-radius:6px}
+  .cartoes{gap:.6rem}
+  .cartao{padding:.8rem .85rem}
+  .cartao dd{font-size:1.28rem}
+  .grande{font-size:1.6rem}
+  .l2,.l3{grid-template-columns:1fr 1fr}
+  .l3 .full,.l2 .full{grid-column:1/-1}
+  .logo small{display:none}
+  .logo b{font-size:.95rem}
+  .so-grande{display:none}
+  .acoes{line-height:1.25;white-space:nowrap}
+  .acoes button{margin-left:.35rem}
+  #estado{font-size:.7rem}
+  /* botão principal ocupa a largura toda, fácil de acertar com o dedão */
+  .bloco > .btn-ouro{width:100%}
+
+  /* tabelas viram cartões */
+  .rolagem{overflow:visible}
+  .rolagem table, .rolagem tbody, .rolagem tr, .rolagem td{display:block;width:100%}
+  .rolagem thead{display:none}
+  .rolagem tr{border:1px solid var(--rule);border-radius:6px;padding:.55rem .75rem;margin-bottom:.6rem;background:var(--bg)}
+  .rolagem td{border:0;padding:.28rem 0;text-align:left}
+  .rolagem td.num{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;text-align:right}
+  .rolagem td[data-rotulo]::before{content:attr(data-rotulo);color:var(--muted);font-size:.8rem;font-weight:500;text-align:left}
+  .rolagem td.num{justify-content:flex-end;gap:.45rem}
+  .rolagem td.num[data-rotulo]::before{margin-right:auto}
+  .rolagem td.num:first-child{justify-content:flex-start;font-weight:600}
+  .rolagem td.num .sub{display:inline;font-size:.78rem}
+  .rolagem td:not(.num)[data-rotulo]::before{display:block;margin-bottom:.1rem}
+  .rolagem td:first-child{font-size:1rem;padding-bottom:.4rem}
+  .rolagem td:not(.num) .sub{display:block}
+  .rolagem td:last-child:has(.apagar){display:flex;justify-content:flex-end;padding-top:.3rem;border-top:1px dashed var(--rule);margin-top:.35rem}
+  .rolagem td:last-child:has(.apagar)::before{content:none}
+  .rolagem td.vazio{text-align:center;display:block}
+  .rolagem td.vazio::before{content:none}
+  .rolagem tr:has(td.vazio){border-style:dashed;background:none}
+
+  .meses{height:120px;gap:.3rem}
+  .mes-rot{font-size:.62rem}
+  .barra{grid-template-columns:minmax(0,7.5rem) 1fr auto}
+  .modal{align-items:flex-end;padding:0}
+  .modal-in{width:100%;max-height:88vh;border-radius:14px 14px 0 0;padding:1.4rem 1.2rem calc(1.4rem + env(safe-area-inset-bottom,0px))}
+}
 </style>
 </head>
 <body>
@@ -181,7 +266,7 @@ input,select{font:inherit;font-size:.95rem;color:var(--text);background:var(--bg
   <div class="acoes">
     <span id="estado">carregando…</span><br>
     <button id="b-log" type="button" hidden>registros</button>
-    <button id="b-senha" type="button" hidden>trocar senha</button>
+    <button id="b-senha" type="button" hidden><span class="so-grande">trocar </span>senha</button>
     <button id="b-sair" type="button" hidden>sair</button>
   </div>
 </div></header>
@@ -189,6 +274,7 @@ input,select{font:inherit;font-size:.95rem;color:var(--text);background:var(--bg
 <nav class="abas"><div class="wrap abas-in" role="tablist">
   <button class="aba" role="tab" aria-selected="true" data-p="painel">Painel</button>
   <button class="aba" role="tab" aria-selected="false" data-p="vendas">Vendas</button>
+  <button class="aba" role="tab" aria-selected="false" data-p="clientes">Clientes</button>
   <button class="aba" role="tab" aria-selected="false" data-p="produtos">Produtos</button>
   <button class="aba" role="tab" aria-selected="false" data-p="insumos">Insumos e compras</button>
   <button class="aba" role="tab" aria-selected="false" data-p="despesas">Despesas</button>
@@ -229,8 +315,11 @@ input,select{font:inherit;font-size:.95rem;color:var(--text);background:var(--bg
       <h3>Registrar venda</h3>
       <div class="linha l3">
         <div class="full"><label for="vd-produto">Produto</label><select id="vd-produto"></select></div>
-        <div><label for="vd-qtd">Quantidade</label><input id="vd-qtd" type="number" min="1" step="1" value="1"></div>
+        <div><label for="vd-qtd">Quantidade</label><input id="vd-qtd" type="text" inputmode="numeric" pattern="[0-9]*" value="1" autocomplete="off"></div>
         <div><label for="vd-data">Data</label><input id="vd-data" type="date"></div>
+      </div>
+      <div class="linha l2">
+        <div><label for="vd-cliente">Cliente <span style="font-weight:400">(opcional)</span></label><select id="vd-cliente"></select></div>
       </div>
       <p class="erro" id="vd-erro"></p>
       <button class="btn btn-ouro" id="vd-salvar" type="button">Registrar</button>
@@ -244,21 +333,56 @@ input,select{font:inherit;font-size:.95rem;color:var(--text);background:var(--bg
     </div>
   </section>
 
+  <section class="painel" id="p-clientes" hidden>
+    <div class="tit"><h2>Clientes</h2><p>Quem compra, quanto compra e quando faz aniversário.</p></div>
+
+    <div class="bloco destaque" id="bloco-aniver" hidden>
+      <h3>Aniversariantes do mês</h3>
+      <div id="aniver"></div>
+    </div>
+
+    <div class="bloco">
+      <h3>Nova cliente</h3>
+      <div class="linha l3">
+        <div class="full"><label for="cl-nome">Nome</label><input id="cl-nome" placeholder="Maria Souza" autocomplete="off"></div>
+        <div><label for="cl-fone">WhatsApp</label><input id="cl-fone" type="tel" inputmode="tel" placeholder="(14) 99999-0000"></div>
+        <div><label for="cl-aniver">Aniversário</label><input id="cl-aniver" inputmode="numeric" placeholder="15/03" maxlength="5"></div>
+      </div>
+      <div class="linha" style="grid-template-columns:1fr">
+        <div><label for="cl-obs">Observação</label><input id="cl-obs" placeholder="Prefere sem lactose, gosta de bolo de limão..."></div>
+      </div>
+      <p class="erro" id="cl-erro"></p>
+      <button class="btn btn-ouro" id="cl-salvar" type="button">Salvar cliente</button>
+      <p class="dica">Só o nome é obrigatório.</p>
+    </div>
+
+    <div class="bloco">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;margin-bottom:.9rem">
+        <h3 style="margin:0">Cadastradas</h3>
+        <input id="cl-busca" placeholder="Buscar pelo nome" style="width:min(240px,100%)">
+      </div>
+      <div class="rolagem"><table>
+        <thead><tr><th>Cliente</th><th class="num">Compras</th><th class="num">Total gasto</th><th>Última compra</th><th></th></tr></thead>
+        <tbody id="tb-clientes"></tbody>
+      </table></div>
+    </div>
+  </section>
+
   <section class="painel" id="p-produtos" hidden>
     <div class="tit"><h2>Produtos</h2><p>Monte a receita com os insumos. O custo sai sozinho.</p></div>
     <div class="bloco">
       <h3>Novo produto</h3>
       <div class="linha l4">
         <div class="full"><label for="pr-nome">Nome</label><input id="pr-nome" placeholder="Bolo de limão"></div>
-        <div><label for="pr-preco">Preço de venda R$</label><input id="pr-preco" type="number" min="0" step="0.01" placeholder="165"></div>
-        <div><label for="pr-emb">Embalagem R$</label><input id="pr-emb" type="number" min="0" step="0.01" placeholder="6"></div>
-        <div><label for="pr-mo">Mão de obra e gás R$</label><input id="pr-mo" type="number" min="0" step="0.01" placeholder="25"></div>
+        <div><label for="pr-preco">Preço de venda R$</label><input id="pr-preco" type="text" inputmode="decimal" autocomplete="off" placeholder="165"></div>
+        <div><label for="pr-emb">Embalagem R$</label><input id="pr-emb" type="text" inputmode="decimal" autocomplete="off" placeholder="6"></div>
+        <div><label for="pr-mo">Mão de obra e gás R$</label><input id="pr-mo" type="text" inputmode="decimal" autocomplete="off" placeholder="25"></div>
       </div>
       <div class="ficha">
         <div style="font-size:.82rem;color:var(--muted);margin-bottom:.5rem">Receita</div>
         <div class="linha l3" style="margin-bottom:.3rem">
           <div class="full"><label for="pr-insumo">Insumo</label><select id="pr-insumo"></select></div>
-          <div><label for="pr-qtd">Quanto usa</label><input id="pr-qtd" type="number" min="0" step="0.001" placeholder="0,25"></div>
+          <div><label for="pr-qtd">Quanto usa</label><input id="pr-qtd" type="text" inputmode="decimal" autocomplete="off" placeholder="0,25"></div>
           <div><label>&nbsp;</label><button class="btn btn-mini" id="pr-add" type="button">Incluir</button></div>
         </div>
         <div id="pr-lista"></div>
@@ -271,7 +395,7 @@ input,select{font:inherit;font-size:.95rem;color:var(--text);background:var(--bg
         <h3 style="margin:0">Cadastrados</h3>
         <div style="display:flex;align-items:center;gap:.5rem">
           <label for="alvo" style="margin:0">Margem desejada</label>
-          <input id="alvo" type="number" min="1" max="90" step="1" value="45" style="width:5rem">
+          <input id="alvo" type="text" inputmode="numeric" pattern="[0-9]*" value="45" style="width:4.5rem" autocomplete="off">
           <span class="dica" style="margin:0">%</span>
         </div>
       </div>
@@ -291,8 +415,8 @@ input,select{font:inherit;font-size:.95rem;color:var(--text);background:var(--bg
         <div><label for="in-unid">Unidade</label>
           <select id="in-unid"><option value="kg">kg</option><option value="g">g</option><option value="L">L</option><option value="ml">ml</option><option value="un">unidade</option></select>
         </div>
-        <div><label for="in-qtd">Qtd na embalagem</label><input id="in-qtd" type="number" min="0" step="0.001" placeholder="1"></div>
-        <div><label for="in-preco">Preço pago R$</label><input id="in-preco" type="number" min="0" step="0.01" placeholder="48,90"></div>
+        <div><label for="in-qtd">Qtd na embalagem</label><input id="in-qtd" type="text" inputmode="decimal" autocomplete="off" placeholder="1"></div>
+        <div><label for="in-preco">Preço pago R$</label><input id="in-preco" type="text" inputmode="decimal" autocomplete="off" placeholder="48,90"></div>
       </div>
       <p class="erro" id="in-erro"></p>
       <button class="btn btn-ouro" id="in-salvar" type="button">Salvar insumo</button>
@@ -303,8 +427,8 @@ input,select{font:inherit;font-size:.95rem;color:var(--text);background:var(--bg
       <div class="linha l4">
         <div class="full"><label for="cp-insumo">Insumo</label><select id="cp-insumo"></select></div>
         <div class="full"><label for="cp-local">Onde comprou</label><input id="cp-local" list="locais" placeholder="Atacadão"><datalist id="locais"></datalist></div>
-        <div><label for="cp-qtd">Quantidade</label><input id="cp-qtd" type="number" min="0" step="0.001" placeholder="5"></div>
-        <div><label for="cp-preco">Total pago R$</label><input id="cp-preco" type="number" min="0" step="0.01" placeholder="228,50"></div>
+        <div><label for="cp-qtd">Quantidade</label><input id="cp-qtd" type="text" inputmode="decimal" autocomplete="off" placeholder="5"></div>
+        <div><label for="cp-preco">Total pago R$</label><input id="cp-preco" type="text" inputmode="decimal" autocomplete="off" placeholder="228,50"></div>
         <div><label for="cp-data">Data</label><input id="cp-data" type="date"></div>
       </div>
       <p class="dica" id="cp-previa">Preencha quantidade e valor para ver o custo por unidade.</p>
@@ -331,7 +455,7 @@ input,select{font:inherit;font-size:.95rem;color:var(--text);background:var(--bg
       <p class="dica" style="margin:-.4rem 0 .8rem">Aluguel, luz, internet, contador, pró-labore.</p>
       <div class="linha l3">
         <div class="full"><label for="df-nome">Nome</label><input id="df-nome" placeholder="Aluguel"></div>
-        <div><label for="df-valor">Por mês R$</label><input id="df-valor" type="number" min="0" step="0.01" placeholder="1200"></div>
+        <div><label for="df-valor">Por mês R$</label><input id="df-valor" type="text" inputmode="decimal" autocomplete="off" placeholder="1200"></div>
         <div><label>&nbsp;</label><button class="btn btn-ouro btn-mini" id="df-salvar" type="button" style="padding:.52rem 1rem">Salvar</button></div>
       </div>
       <p class="erro" id="df-erro"></p>
@@ -345,7 +469,7 @@ input,select{font:inherit;font-size:.95rem;color:var(--text);background:var(--bg
       <p class="dica" style="margin:-.4rem 0 .8rem">Conserto, curso, uma forma nova. Conta só no mês em que aconteceu.</p>
       <div class="linha l3">
         <div class="full"><label for="da-nome">Nome</label><input id="da-nome" placeholder="Conserto da batedeira"></div>
-        <div><label for="da-valor">Valor R$</label><input id="da-valor" type="number" min="0" step="0.01" placeholder="380"></div>
+        <div><label for="da-valor">Valor R$</label><input id="da-valor" type="text" inputmode="decimal" autocomplete="off" placeholder="380"></div>
         <div><label for="da-data">Data</label><input id="da-data" type="date"></div>
       </div>
       <p class="erro" id="da-erro"></p>
@@ -372,8 +496,8 @@ var DOMINIO = "@amarelomanteiga.com.br";
 /* ===================================================== */
 
 var CHAVE = "amarelo-manteiga-v2";
-var LISTAS = ["insumos","produtos","vendas","compras","fixas","avulsas","log"];
-var dados = { insumos:[], produtos:[], vendas:[], compras:[], fixas:[], avulsas:[], log:[], removidos:[] };
+var LISTAS = ["insumos","produtos","vendas","compras","fixas","avulsas","clientes","log"];
+var dados = { insumos:[], produtos:[], vendas:[], compras:[], fixas:[], avulsas:[], clientes:[], log:[], removidos:[] };
 var sb = null, usuario = null, salvando = false, pendente = false;
 var ficha = [];
 
@@ -382,6 +506,15 @@ var reais = function(n){ return (n<0?"-":"") + "R$ " + Math.abs(n||0).toLocaleSt
 var pct = function(n){ return (n||0).toLocaleString("pt-BR",{minimumFractionDigits:1,maximumFractionDigits:1}) + "%"; };
 var novoId = function(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); };
 var esc = function(s){ var d=document.createElement("div"); d.textContent = s==null?"":String(s); return d.innerHTML; };
+/* Lê "48,90", "48.90", "1.234,56" ou "1234.56" e devolve número. */
+function num(id){
+  var t = String($(id).value || "").trim().replace(/\s|R\$/g, "");
+  if(!t) return NaN;
+  if(t.indexOf(",") > -1) t = t.replace(/\./g, "").replace(",", ".");
+  else if((t.match(/\./g)||[]).length > 1) t = t.replace(/\./g, "");
+  var n = parseFloat(t);
+  return isFinite(n) ? n : NaN;
+}
 var dataBR = function(iso){ return iso ? iso.split("-").reverse().join("/") : ""; };
 function estado(t){ $("estado").textContent = t; }
 function erro(el,msg){ var e=$(el); e.className="erro"; e.textContent=msg; return false; }
@@ -766,12 +899,12 @@ function desenharPainel(){
       + '<td class="num '+(l>=0?"pos":"neg")+'">'+reais(l)+'</td></tr>';
   }).join("") : '<tr><td colspan="5" class="vazio">Sem vendas no período.</td></tr>';
 }
-$("periodo").addEventListener("change", desenharPainel);
+$("periodo").addEventListener("change", function(){ desenharPainel(); rotular(); });
 
 /* ---------- insumos ---------- */
 $("in-salvar").addEventListener("click", function(){
   var nome = $("in-nome").value.trim();
-  var qtd = parseFloat($("in-qtd").value), preco = parseFloat($("in-preco").value);
+  var qtd = num("in-qtd"), preco = num("in-preco");
   if(nome.length < 2) return erro("in-erro","Dê um nome ao insumo.");
   if(!(qtd > 0)) return erro("in-erro","Informe quanto vem na embalagem.");
   if(!(preco > 0)) return erro("in-erro","Informe quanto você pagou.");
@@ -815,7 +948,7 @@ function desenharInsumos(){
 $("cp-data").value = new Date().toISOString().slice(0,10);
 
 function previa(){
-  var q = parseFloat($("cp-qtd").value), v = parseFloat($("cp-preco").value);
+  var q = num("cp-qtd"), v = num("cp-preco");
   var ins = insumoPor($("cp-insumo").value);
   if(!(q>0) || !(v>0) || !ins){
     $("cp-previa").textContent = "Preencha quantidade e valor para ver o custo por unidade.";
@@ -837,7 +970,7 @@ function previa(){
 
 $("cp-salvar").addEventListener("click", function(){
   var iid = $("cp-insumo").value, local = $("cp-local").value.trim();
-  var q = parseFloat($("cp-qtd").value), v = parseFloat($("cp-preco").value), d = $("cp-data").value;
+  var q = num("cp-qtd"), v = num("cp-preco"), d = $("cp-data").value;
   if(!iid) return erro("cp-erro","Cadastre um insumo antes.");
   if(local.length < 2) return erro("cp-erro","Diga onde você comprou.");
   if(!(q > 0)) return erro("cp-erro","Informe quanto você levou.");
@@ -880,7 +1013,7 @@ function desenharCompras(){
 
 /* ---------- produtos ---------- */
 $("pr-add").addEventListener("click", function(){
-  var iid = $("pr-insumo").value, q = parseFloat($("pr-qtd").value);
+  var iid = $("pr-insumo").value, q = num("pr-qtd");
   if(!iid) return erro("pr-erro","Cadastre um insumo antes de montar a receita.");
   if(!(q > 0)) return erro("pr-erro","Informe quanto da receita usa.");
   erro("pr-erro","");
@@ -907,15 +1040,15 @@ function desenharFicha(){
 }
 
 $("pr-salvar").addEventListener("click", function(){
-  var nome = $("pr-nome").value.trim(), preco = parseFloat($("pr-preco").value);
+  var nome = $("pr-nome").value.trim(), preco = num("pr-preco");
   if(nome.length < 2) return erro("pr-erro","Dê um nome ao produto.");
   if(!(preco > 0)) return erro("pr-erro","Informe o preço de venda.");
   if(!ficha.length) return erro("pr-erro","Inclua pelo menos um insumo na receita.");
   erro("pr-erro","");
   dados.produtos.push({
     id:novoId(), nome:nome, preco:preco,
-    embalagem: parseFloat($("pr-emb").value) || 0,
-    maoObra: parseFloat($("pr-mo").value) || 0,
+    embalagem: num("pr-emb") || 0,
+    maoObra: num("pr-mo") || 0,
     ficha: ficha.slice(), por:quemSou()
   });
   anotar("cadastrou o produto", nome + " a " + reais(preco));
@@ -925,7 +1058,7 @@ $("pr-salvar").addEventListener("click", function(){
 });
 
 function desenharProdutos(){
-  var alvo = Math.min(0.9, Math.max(0.01, (parseFloat($("alvo").value) || 45)/100));
+  var alvo = Math.min(0.9, Math.max(0.01, (num("alvo") || 45)/100));
   var rat = rateio();
   var tb = $("tb-produtos");
   if(!dados.produtos.length){
@@ -950,24 +1083,27 @@ function desenharProdutos(){
     : '<option value="">Cadastre um produto primeiro</option>';
   $("vd-produto").innerHTML = ops;
 }
-$("alvo").addEventListener("input", desenharProdutos);
+$("alvo").addEventListener("input", function(){ desenharProdutos(); rotular(); });
 
 /* ---------- vendas ---------- */
 $("vd-data").value = new Date().toISOString().slice(0,10);
 
 $("vd-salvar").addEventListener("click", function(){
-  var pid = $("vd-produto").value, q = parseInt($("vd-qtd").value,10), d = $("vd-data").value;
+  var pid = $("vd-produto").value, q = Math.round(num("vd-qtd")), d = $("vd-data").value;
   if(!pid) return erro("vd-erro","Cadastre um produto antes de registrar vendas.");
   if(!q || q < 1) return erro("vd-erro","A quantidade precisa ser pelo menos 1.");
   if(!d) return erro("vd-erro","Escolha a data da venda.");
   erro("vd-erro","");
   var p = produtoPor(pid);
+  var cli = clientePor($("vd-cliente").value);
   dados.vendas.push({
     id:novoId(), produtoId:p.id, nome:p.nome, qtd:q, data:d,
-    preco:p.preco, custo:custoProduto(p), por:quemSou()
+    preco:p.preco, custo:custoProduto(p), por:quemSou(),
+    clienteId: cli ? cli.id : "", cliente: cli ? cli.nome : ""
   });
-  anotar("registrou a venda de", q + "x " + p.nome);
+  anotar("registrou a venda de", q + "x " + p.nome + (cli ? " para " + cli.nome : ""));
   $("vd-qtd").value = 1;
+  $("vd-cliente").value = "";
   gravar(); tudo();
 });
 
@@ -981,7 +1117,8 @@ function desenharVendas(){
   tb.innerHTML = lista.map(function(v){
     var l = (v.preco - v.custo) * v.qtd;
     return '<tr><td class="num" style="text-align:left">'+dataBR(v.data)+'</td>'
-      + '<td><span class="forte">'+esc(v.nome)+'</span>'+(v.por?'<span class="sub">'+esc(v.por)+'</span>':'')+'</td>'
+      + '<td><span class="forte">'+esc(v.nome)+'</span><span class="sub">'
+        + esc([v.cliente, v.por ? "por " + v.por : ""].filter(Boolean).join(" · ")) + '</span></td>'
       + '<td class="num">'+v.qtd+'</td>'
       + '<td class="num">'+reais(v.preco*v.qtd)+'</td>'
       + '<td class="num '+(l>=0?"pos":"neg")+'">'+reais(l)+'</td>'
@@ -989,11 +1126,114 @@ function desenharVendas(){
   }).join("");
 }
 
+
+/* ---------- clientes ---------- */
+function clientePor(i){ if(!i) return null; for(var k=0;k<dados.clientes.length;k++) if(dados.clientes[k].id===i) return dados.clientes[k]; return null; }
+function soDigitos(t){ return (t||"").replace(/\D/g,""); }
+function linkWhats(fone){
+  var d = soDigitos(fone);
+  if(d.length < 10) return "";
+  if(d.length <= 11) d = "55" + d;
+  return "https://wa.me/" + d;
+}
+
+$("cl-aniver").addEventListener("input", function(){
+  var d = soDigitos(this.value).slice(0,4);
+  this.value = d.length > 2 ? d.slice(0,2) + "/" + d.slice(2) : d;
+});
+
+$("cl-salvar").addEventListener("click", function(){
+  var nome = $("cl-nome").value.trim();
+  var fone = $("cl-fone").value.trim();
+  var aniv = $("cl-aniver").value.trim();
+  if(nome.length < 2) return erro("cl-erro","Diga o nome da cliente.");
+  var repetida = dados.clientes.some(function(c){ return c.nome.toLowerCase() === nome.toLowerCase(); });
+  if(repetida) return erro("cl-erro","Já existe uma cliente com esse nome.");
+  if(fone && soDigitos(fone).length < 10) return erro("cl-erro","WhatsApp com DDD, pelo menos 10 números.");
+  if(aniv){
+    var m = aniv.match(/^(\d{2})\/(\d{2})$/);
+    if(!m || +m[1] < 1 || +m[1] > 31 || +m[2] < 1 || +m[2] > 12) return erro("cl-erro","Aniversário no formato dia/mês, ex: 15/03.");
+  }
+  erro("cl-erro","");
+  dados.clientes.push({
+    id:novoId(), nome:nome, fone:fone, aniver:aniv,
+    obs:$("cl-obs").value.trim(), por:quemSou()
+  });
+  anotar("cadastrou a cliente", nome);
+  ["cl-nome","cl-fone","cl-aniver","cl-obs"].forEach(function(k){ $(k).value = ""; });
+  $("cl-nome").focus();
+  gravar(); tudo();
+});
+
+$("cl-busca").addEventListener("input", function(){ desenharClientes(); rotular(); });
+
+function desenharClientes(){
+  // resumo de compras por cliente
+  var comp = {};
+  dados.vendas.forEach(function(v){
+    if(!v.clienteId) return;
+    if(!comp[v.clienteId]) comp[v.clienteId] = {n:0, total:0, ultima:""};
+    comp[v.clienteId].n++;
+    comp[v.clienteId].total += v.preco * v.qtd;
+    if(v.data > comp[v.clienteId].ultima) comp[v.clienteId].ultima = v.data;
+  });
+
+  var busca = $("cl-busca").value.trim().toLowerCase();
+  var lista = dados.clientes
+    .filter(function(c){ return !busca || c.nome.toLowerCase().indexOf(busca) > -1; })
+    .sort(function(a,b){ return a.nome.localeCompare(b.nome, "pt-BR"); });
+
+  var tb = $("tb-clientes");
+  if(!dados.clientes.length){
+    tb.innerHTML = '<tr><td colspan="5" class="vazio"><strong>Nenhuma cliente cadastrada.</strong><p>Cadastre quem compra com frequência. Depois é só escolher o nome na hora da venda.</p></td></tr>';
+  }else if(!lista.length){
+    tb.innerHTML = '<tr><td colspan="5" class="vazio">Ninguém com esse nome.</td></tr>';
+  }else{
+    tb.innerHTML = lista.map(function(c){
+      var r = comp[c.id] || {n:0, total:0, ultima:""};
+      var wa = linkWhats(c.fone);
+      var extra = [
+        c.fone ? (wa ? '<a href="'+wa+'" target="_blank" rel="noopener" style="color:var(--ouro)">'+esc(c.fone)+'</a>' : esc(c.fone)) : "",
+        c.aniver ? "aniversário " + esc(c.aniver) : "",
+        c.obs ? esc(c.obs) : ""
+      ].filter(Boolean).join(" · ");
+      return '<tr><td><span class="forte">'+esc(c.nome)+'</span>'
+        + (extra ? '<span class="sub">'+extra+'</span>' : '') + '</td>'
+        + '<td class="num">'+r.n+'</td>'
+        + '<td class="num">'+(r.total ? reais(r.total) : "—")+'</td>'
+        + '<td>'+(r.ultima ? dataBR(r.ultima) : '<span class="sub" style="display:inline">ainda não comprou</span>')+'</td>'
+        + '<td class="num"><button class="apagar" data-del-cliente="'+c.id+'">excluir</button></td></tr>';
+    }).join("");
+  }
+
+  // aniversariantes do mês
+  var mes = String(new Date().getMonth()+1).padStart(2,"0");
+  var hoje = new Date().getDate();
+  var aniv = dados.clientes.filter(function(c){ return c.aniver && c.aniver.slice(3) === mes; })
+    .sort(function(a,b){ return a.aniver.localeCompare(b.aniver); });
+  $("bloco-aniver").hidden = !aniv.length;
+  $("aniver").innerHTML = aniv.map(function(c){
+    var dia = +c.aniver.slice(0,2), wa = linkWhats(c.fone);
+    var quando = dia === hoje ? '<strong class="pos">hoje</strong>' : dia < hoje ? 'já passou' : 'dia ' + dia;
+    return '<div class="barra" style="grid-template-columns:1fr auto auto"><span class="forte">'+esc(c.nome)+'</span>'
+      + '<span class="sub" style="display:inline">'+quando+'</span>'
+      + (wa ? '<a class="btn btn-mini" href="'+wa+'" target="_blank" rel="noopener" style="text-decoration:none">WhatsApp</a>' : '<span></span>')
+      + '</div>';
+  }).join("");
+
+  // lista de clientes na venda
+  var atual = $("vd-cliente").value;
+  $("vd-cliente").innerHTML = '<option value="">Sem cliente</option>'
+    + dados.clientes.slice().sort(function(a,b){ return a.nome.localeCompare(b.nome,"pt-BR"); })
+      .map(function(c){ return '<option value="'+c.id+'">'+esc(c.nome)+'</option>'; }).join("");
+  if(atual) $("vd-cliente").value = atual;
+}
+
 /* ---------- despesas ---------- */
 $("da-data").value = new Date().toISOString().slice(0,10);
 
 $("df-salvar").addEventListener("click", function(){
-  var nome = $("df-nome").value.trim(), valor = parseFloat($("df-valor").value);
+  var nome = $("df-nome").value.trim(), valor = num("df-valor");
   if(nome.length < 2) return erro("df-erro","Dê um nome à despesa.");
   if(!(valor > 0)) return erro("df-erro","Informe quanto custa por mês.");
   erro("df-erro","");
@@ -1004,7 +1244,7 @@ $("df-salvar").addEventListener("click", function(){
 });
 
 $("da-salvar").addEventListener("click", function(){
-  var nome = $("da-nome").value.trim(), valor = parseFloat($("da-valor").value), d = $("da-data").value;
+  var nome = $("da-nome").value.trim(), valor = num("da-valor"), d = $("da-data").value;
   if(nome.length < 2) return erro("da-erro","Dê um nome ao gasto.");
   if(!(valor > 0)) return erro("da-erro","Informe o valor.");
   if(!d) return erro("da-erro","Escolha a data.");
@@ -1076,6 +1316,13 @@ document.addEventListener("click", function(ev){
     excluir([v]);
     gravar(); tudo(); return;
   }
+  if((v = b.getAttribute("data-del-cliente"))){
+    var c = clientePor(v);
+    if(!confirm("Excluir " + (c ? c.nome : "esta cliente") + "? As vendas dela continuam no histórico.")) return;
+    anotar("excluiu a cliente", c ? c.nome : "");
+    excluir([v]);
+    gravar(); tudo(); return;
+  }
   if((v = b.getAttribute("data-del-fixa"))){
     anotar("excluiu uma despesa fixa", "");
     excluir([v]);
@@ -1100,9 +1347,24 @@ Array.prototype.forEach.call(document.querySelectorAll(".aba"), function(b){
   });
 });
 
+
+/* Copia o título de cada coluna para as células, usado quando a tabela vira cartão no celular. */
+function rotular(){
+  Array.prototype.forEach.call(document.querySelectorAll(".rolagem table"), function(t){
+    var tits = Array.prototype.map.call(t.querySelectorAll("thead th"), function(th){ return th.textContent.trim(); });
+    Array.prototype.forEach.call(t.querySelectorAll("tbody tr"), function(tr){
+      Array.prototype.forEach.call(tr.children, function(td, i){
+        if(td.classList.contains("vazio") || td.hasAttribute("colspan")) return;
+        if(i > 0 && tits[i]) td.setAttribute("data-rotulo", tits[i]);
+      });
+    });
+  });
+}
+
 function tudo(){
   desenharInsumos(); desenharCompras(); desenharProdutos();
-  desenharVendas(); desenharDespesas(); desenharFicha(); desenharPainel();
+  desenharClientes(); desenharVendas(); desenharDespesas(); desenharFicha(); desenharPainel();
+  rotular();
 }
 tudo();
 })();
