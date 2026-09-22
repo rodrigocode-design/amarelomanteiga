@@ -134,6 +134,11 @@ input,select{font:inherit;font-size:.95rem;color:var(--text);background:var(--bg
 .btn-mini{padding:.28rem .6rem;font-size:.8rem;font-weight:500;border-radius:3px}
 .apagar{color:var(--vermelho);border:0;background:none;padding:.25rem .4rem;cursor:pointer;font:inherit;font-size:.83rem}
 .apagar:hover{text-decoration:underline}
+.editar{color:var(--ouro);border:0;background:none;padding:.25rem .4rem;cursor:pointer;font:inherit;font-size:.83rem;font-weight:600}
+.editar:hover{text-decoration:underline}
+.marca{display:inline-block;font-size:.74rem;font-weight:600;color:var(--ouro);background:color-mix(in srgb,var(--manteiga) 22%,transparent);
+  border:1px solid color-mix(in srgb,var(--ouro) 30%,transparent);border-radius:999px;padding:.02rem .5rem;margin-left:.3rem;vertical-align:1px}
+#in-unid:disabled{opacity:.6}
 
 .ficha{border:1px dashed var(--rule);border-radius:3px;padding:.75rem;margin:.75rem 0;background:var(--surface-2)}
 .fitem{display:flex;align-items:center;gap:.5rem;padding:.25rem 0;font-size:.89rem}
@@ -189,7 +194,7 @@ nav.abas::-webkit-scrollbar{display:none}
   .btn{min-height:46px;padding:.6rem 1.2rem}
   .btn-mini{min-height:40px;padding:.4rem .8rem}
   .aba{padding:.85rem 1rem}
-  .apagar{min-height:40px;padding:.4rem .6rem}
+  .apagar,.editar{min-height:40px;padding:.4rem .6rem}
   .pilula{min-height:42px;padding:.5rem 1rem}
   .selo-estado{min-height:34px}
 }
@@ -213,6 +218,7 @@ nav.abas::-webkit-scrollbar{display:none}
   .cartao dd{font-size:1.28rem}
   .grande{font-size:1.6rem}
   .l2,.l3{grid-template-columns:1fr 1fr}
+  .l3.sem-full > div:first-child{grid-column:1/-1}
   .l3 .full,.l2 .full{grid-column:1/-1}
   .logo small{display:none}
   .logo b{font-size:.95rem}
@@ -249,7 +255,7 @@ nav.abas::-webkit-scrollbar{display:none}
   .rolagem td:not(.num)[data-rotulo]::before{display:block;margin-bottom:.1rem}
   .rolagem td:first-child{font-size:1rem;padding-bottom:.4rem}
   .rolagem td:not(.num) .sub{display:block}
-  .rolagem td:last-child:has(.apagar){display:flex;justify-content:flex-end;padding-top:.3rem;border-top:1px dashed var(--rule);margin-top:.35rem}
+  .rolagem td:last-child:has(.apagar){display:flex;justify-content:flex-end;gap:.4rem;padding-top:.3rem;border-top:1px dashed var(--rule);margin-top:.35rem}
   .rolagem td:last-child:has(.apagar)::before{content:none}
   .rolagem td.vazio{text-align:center;display:block}
   .rolagem td.vazio::before{content:none}
@@ -470,18 +476,25 @@ nav.abas::-webkit-scrollbar{display:none}
 
   <section class="painel" id="p-insumos" hidden>
     <div class="tit"><h2>Insumos e compras</h2><p>O custo sempre vem da compra mais recente.</p></div>
-    <div class="bloco">
-      <h3>Novo insumo</h3>
-      <div class="linha l4">
-        <div class="full"><label for="in-nome">Nome</label><input id="in-nome" placeholder="Manteiga sem sal"></div>
+    <div class="bloco" id="bloco-insumo">
+      <h3 id="in-titulo">Novo insumo</h3>
+      <div class="linha l2">
+        <div><label for="in-nome">Nome</label><input id="in-nome" placeholder="Leite condensado" autocomplete="off"></div>
+        <div><label for="in-marca">Marca <span style="font-weight:400">(opcional)</span></label><input id="in-marca" placeholder="Moça" autocomplete="off"></div>
+      </div>
+      <div class="linha l3 sem-full">
         <div><label for="in-unid">Unidade</label>
           <select id="in-unid"><option value="kg">kg</option><option value="g">g</option><option value="L">L</option><option value="ml">ml</option><option value="un">unidade</option></select>
         </div>
         <div><label for="in-qtd">Qtd na embalagem</label><input id="in-qtd" type="text" inputmode="decimal" autocomplete="off" placeholder="1"></div>
         <div><label for="in-preco">Preço pago R$</label><input id="in-preco" type="text" inputmode="decimal" autocomplete="off" placeholder="48,90"></div>
       </div>
+      <p class="dica" id="in-unid-aviso" hidden>A unidade não pode mudar: este insumo já está em receitas ou compras, e as quantidades de lá seriam lidas errado.</p>
       <p class="erro" id="in-erro"></p>
-      <button class="btn btn-ouro" id="in-salvar" type="button">Salvar insumo</button>
+      <div style="display:flex;gap:.6rem;flex-wrap:wrap">
+        <button class="btn btn-ouro" id="in-salvar" type="button">Salvar insumo</button>
+        <button class="btn" id="in-cancelar" type="button" hidden>Cancelar</button>
+      </div>
     </div>
 
     <div class="bloco">
@@ -555,6 +568,8 @@ nav.abas::-webkit-scrollbar{display:none}
 var SUPABASE_URL   = "https://maogchqzoejdurmewfdf.supabase.co";
 var SUPABASE_CHAVE = "sb_publishable_VCFCI6rtsQZs6IMfUOFfVA_5L3uADqU";
 var DOMINIO = "@amarelomanteiga.com.br";
+/* Logins cujas ações não aparecem nos registros nem como autor. */
+var INVISIVEIS = ["adm"];
 /* ===================================================== */
 
 var CHAVE = "amarelo-manteiga-v2";
@@ -608,8 +623,15 @@ function quemSou(){
   var n = usuario.email.split("@")[0].replace(/[._-]+/g," ");
   return n.charAt(0).toUpperCase() + n.slice(1);
 }
+function souInvisivel(){
+  return !!(usuario && usuario.email && INVISIVEIS.indexOf(usuario.email.split("@")[0].toLowerCase()) > -1);
+}
+/* autor gravado nos itens: vazio para o administrador */
+function autor(){ return souInvisivel() ? "" : quemSou(); }
+
 function anotar(acao, alvo){
-  dados.log.push({ id:novoId(), em:new Date().toISOString(), por:quemSou(), acao:acao, alvo:alvo||"" });
+  if(souInvisivel()) return;
+  dados.log.push({ id:novoId(), em:new Date().toISOString(), por:autor(), acao:acao, alvo:alvo||"" });
 }
 
 /* ---------- gravação compartilhada ---------- */
@@ -636,8 +658,14 @@ function mesclar(remoto){
   LISTAS.forEach(function(nome){
     var la = remoto[nome] || [], aqui = dados[nome] || [];
     var vistos = {}, junto = [];
-    aqui.forEach(function(it){ if(it && it.id){ vistos[it.id] = true; junto.push(it); } });
-    la.forEach(function(it){ if(it && it.id && !vistos[it.id]) junto.push(it); });
+    // mesmo item dos dois lados: fica a versão editada por último
+    aqui.forEach(function(it){ if(it && it.id){ vistos[it.id] = junto.length; junto.push(it); } });
+    la.forEach(function(it){
+      if(!it || !it.id) return;
+      if(!(it.id in vistos)){ junto.push(it); return; }
+      var k = vistos[it.id];
+      if((it.mod || 0) > (junto[k].mod || 0)) junto[k] = it;
+    });
     dados[nome] = junto;
   });
   if(dados.log.length > 300){
@@ -659,7 +687,7 @@ function salvarAgora(){
     if(r.data && r.data.dados) mesclar(r.data.dados);
     return sb.from("gestao").upsert({
       id:"confeitaria", dados:dados,
-      atualizado_em:new Date().toISOString(), atualizado_por:quemSou()
+      atualizado_em:new Date().toISOString(), atualizado_por:autor()
     }, { onConflict:"id" });
   }).then(function(r){
     if(r && r.error) throw r.error;
@@ -836,6 +864,12 @@ function desenharLog(){
 /* ---------- cálculos ---------- */
 function insumoPor(i){ for(var k=0;k<dados.insumos.length;k++) if(dados.insumos[k].id===i) return dados.insumos[k]; return null; }
 function produtoPor(i){ for(var k=0;k<dados.produtos.length;k++) if(dados.produtos[k].id===i) return dados.produtos[k]; return null; }
+
+function nomeInsumo(i){ return i ? i.nome + (i.marca ? " · " + i.marca : "") : "insumo"; }
+function insumoEmUso(iid){
+  return dados.compras.some(function(c){ return c.insumoId === iid; }) ||
+         dados.produtos.some(function(p){ return (p.ficha||[]).some(function(l){ return l.insumoId === iid; }); });
+}
 
 function comprasDe(iid){
   return dados.compras.filter(function(c){ return c.insumoId === iid; })
@@ -1037,16 +1071,68 @@ function desenharPainel(){
 $("periodo").addEventListener("change", function(){ desenharPainel(); rotular(); });
 
 /* ---------- insumos ---------- */
+var editandoInsumo = null;
+
+function limparFormInsumo(){
+  editandoInsumo = null;
+  ["in-nome","in-marca","in-qtd","in-preco"].forEach(function(k){ $(k).value = ""; });
+  $("in-unid").disabled = false;
+  $("in-unid-aviso").hidden = true;
+  $("in-titulo").textContent = "Novo insumo";
+  $("in-salvar").textContent = "Salvar insumo";
+  $("in-cancelar").hidden = true;
+  erro("in-erro","");
+}
+
+function editarInsumo(iid){
+  var i = insumoPor(iid); if(!i) return;
+  editandoInsumo = iid;
+  $("in-nome").value = i.nome;
+  $("in-marca").value = i.marca || "";
+  $("in-unid").value = i.unidade;
+  $("in-qtd").value = String(i.qtd).replace(".", ",");
+  $("in-preco").value = i.preco.toFixed(2).replace(".", ",");
+  var travada = insumoEmUso(iid);
+  $("in-unid").disabled = travada;
+  $("in-unid-aviso").hidden = !travada;
+  $("in-titulo").textContent = "Editando: " + nomeInsumo(i);
+  $("in-salvar").textContent = "Salvar alterações";
+  $("in-cancelar").hidden = false;
+  erro("in-erro","");
+  $("bloco-insumo").scrollIntoView({behavior:"smooth", block:"start"});
+  setTimeout(function(){ $("in-marca").focus(); }, 350);
+}
+
+$("in-cancelar").addEventListener("click", limparFormInsumo);
+
 $("in-salvar").addEventListener("click", function(){
-  var nome = $("in-nome").value.trim();
+  var nome = $("in-nome").value.trim(), marca = $("in-marca").value.trim();
   var qtd = num("in-qtd"), preco = num("in-preco");
   if(nome.length < 2) return erro("in-erro","Dê um nome ao insumo.");
   if(!(qtd > 0)) return erro("in-erro","Informe quanto vem na embalagem.");
   if(!(preco > 0)) return erro("in-erro","Informe quanto você pagou.");
+  var repetido = dados.insumos.some(function(x){
+    return x.id !== editandoInsumo && x.nome.toLowerCase() === nome.toLowerCase()
+      && (x.marca||"").toLowerCase() === marca.toLowerCase();
+  });
+  if(repetido) return erro("in-erro","Já existe esse insumo com essa marca.");
   erro("in-erro","");
-  dados.insumos.push({id:novoId(), nome:nome, unidade:$("in-unid").value, qtd:qtd, preco:preco, por:quemSou()});
-  anotar("cadastrou o insumo", nome);
-  $("in-nome").value=""; $("in-qtd").value=""; $("in-preco").value="";
+
+  if(editandoInsumo){
+    var i = insumoPor(editandoInsumo);
+    var antes = nomeInsumo(i);
+    i.nome = nome; i.marca = marca; i.qtd = qtd; i.preco = preco;
+    if(!$("in-unid").disabled) i.unidade = $("in-unid").value;
+    i.mod = Date.now();
+    anotar("editou o insumo", antes === nomeInsumo(i) ? antes : antes + " → " + nomeInsumo(i));
+    limparFormInsumo();
+    gravar(); tudo();
+    return;
+  }
+
+  dados.insumos.push({id:novoId(), nome:nome, marca:marca, unidade:$("in-unid").value, qtd:qtd, preco:preco, por:autor(), mod:Date.now()});
+  anotar("cadastrou o insumo", nome + (marca ? " · " + marca : ""));
+  limparFormInsumo();
   $("in-nome").focus();
   gravar(); tudo();
 });
@@ -1062,16 +1148,19 @@ function desenharInsumos(){
         : '<span class="'+(v>0.5?"neg":v<-0.5?"pos":"")+'">'
           + (v>0.5?"subiu ":v<-0.5?"caiu ":"estável") + (Math.abs(v)>=0.5?pct(Math.abs(v)):"") + '</span>';
       return '<tr><td><span class="forte">'+esc(i.nome)+'</span>'
+        + (i.marca ? ' <span class="marca">'+esc(i.marca)+'</span>' : '')
         + '<span class="sub">embalagem de '+i.qtd.toLocaleString("pt-BR")+' '+esc(i.unidade)+'</span></td>'
         + '<td class="num"><strong>'+reais(custoUnit(i))+'</strong><span class="sub">por '+esc(i.unidade)+'</span></td>'
         + '<td>'+(ult ? esc(ult.local||"sem local")+'<span class="sub">'+dataBR(ult.data)+' · '+reais(ult.preco)+'</span>'
                       : '<span class="sub" style="display:inline">sem compra registrada</span>')+'</td>'
         + '<td class="num">'+vtxt+'</td>'
-        + '<td class="num"><button class="apagar" data-del-insumo="'+i.id+'">excluir</button></td></tr>';
+        + '<td class="num"><button class="editar" data-edit-insumo="'+i.id+'">editar</button>'
+        + '<button class="apagar" data-del-insumo="'+i.id+'">excluir</button></td></tr>';
     }).join("");
   }
   var ops = dados.insumos.length
-    ? dados.insumos.map(function(i){ return '<option value="'+i.id+'">'+esc(i.nome)+' ('+esc(i.unidade)+')</option>'; }).join("")
+    ? dados.insumos.slice().sort(function(a,b){ return nomeInsumo(a).localeCompare(nomeInsumo(b),"pt-BR"); })
+        .map(function(i){ return '<option value="'+i.id+'">'+esc(nomeInsumo(i))+' ('+esc(i.unidade)+')</option>'; }).join("")
     : '<option value="">Cadastre um insumo primeiro</option>';
   $("pr-insumo").innerHTML = ops;
   var atual = $("cp-insumo").value;
@@ -1112,8 +1201,8 @@ $("cp-salvar").addEventListener("click", function(){
   if(!(v > 0)) return erro("cp-erro","Informe o total pago.");
   if(!d) return erro("cp-erro","Escolha a data.");
   erro("cp-erro","");
-  dados.compras.push({id:novoId(), insumoId:iid, local:local, qtd:q, preco:v, data:d, por:quemSou()});
-  anotar("comprou", (insumoPor(iid)||{nome:"insumo"}).nome + " em " + local + " por " + reais(v));
+  dados.compras.push({id:novoId(), insumoId:iid, local:local, qtd:q, preco:v, data:d, por:autor()});
+  anotar("comprou", nomeInsumo(insumoPor(iid)) + " em " + local + " por " + reais(v));
   $("cp-qtd").value=""; $("cp-preco").value="";
   previa(); gravar(); tudo();
 });
@@ -1134,7 +1223,7 @@ function desenharCompras(){
       var dif = pior.unit > 0 ? (pior.unit-melhor.unit)/pior.unit*100 : 0;
       var topo = pior.unit || 1;
       return '<div style="margin-bottom:1.1rem"><div style="display:flex;justify-content:space-between;gap:.6rem;flex-wrap:wrap">'
-        + '<strong>'+esc(i.nome)+'</strong>'
+        + '<strong>'+esc(nomeInsumo(i))+'</strong>'
         + '<span class="dica" style="margin:0">'+esc(melhor.local)+' é <strong class="pos">'+pct(dif)+'</strong> mais barato</span></div>'
         + ls.map(function(l,idx){
             return '<div class="barra"><span title="'+esc(l.local)+'">'+esc(l.local)+'</span>'
@@ -1162,7 +1251,7 @@ function desenharFicha(){
   var html = ficha.map(function(l, idx){
     var ins = insumoPor(l.insumoId); if(!ins) return "";
     var c = custoUnit(ins)*l.qtd; soma += c;
-    return '<div class="fitem"><span>'+esc(ins.nome)+'</span>'
+    return '<div class="fitem"><span>'+esc(nomeInsumo(ins))+'</span>'
       + '<span class="sub" style="display:inline">'+l.qtd.toLocaleString("pt-BR")+' '+esc(ins.unidade)+'</span>'
       + '<span class="num">'+reais(c)+'</span>'
       + '<button class="apagar" data-tirar="'+idx+'">tirar</button></div>';
@@ -1184,7 +1273,7 @@ $("pr-salvar").addEventListener("click", function(){
     id:novoId(), nome:nome, preco:preco,
     embalagem: num("pr-emb") || 0,
     maoObra: num("pr-mo") || 0,
-    ficha: ficha.slice(), por:quemSou()
+    ficha: ficha.slice(), por:autor()
   });
   anotar("cadastrou o produto", nome + " a " + reais(preco));
   ficha = [];
@@ -1233,7 +1322,7 @@ $("vd-salvar").addEventListener("click", function(){
   var cli = clientePor($("vd-cliente").value);
   dados.vendas.push({
     id:novoId(), produtoId:p.id, nome:p.nome, qtd:q, data:d,
-    preco:p.preco, custo:custoProduto(p), por:quemSou(),
+    preco:p.preco, custo:custoProduto(p), por:autor(),
     clienteId: cli ? cli.id : "", cliente: cli ? cli.nome : ""
   });
   anotar("registrou a venda de", q + "x " + p.nome + (cli ? " para " + cli.nome : ""));
@@ -1292,7 +1381,7 @@ $("cl-salvar").addEventListener("click", function(){
   erro("cl-erro","");
   dados.clientes.push({
     id:novoId(), nome:nome, fone:fone, aniver:aniv,
-    obs:$("cl-obs").value.trim(), por:quemSou()
+    obs:$("cl-obs").value.trim(), por:autor()
   });
   anotar("cadastrou a cliente", nome);
   ["cl-nome","cl-fone","cl-aniver","cl-obs"].forEach(function(k){ $(k).value = ""; });
@@ -1372,7 +1461,7 @@ $("df-salvar").addEventListener("click", function(){
   if(nome.length < 2) return erro("df-erro","Dê um nome à despesa.");
   if(!(valor > 0)) return erro("df-erro","Informe quanto custa por mês.");
   erro("df-erro","");
-  dados.fixas.push({id:novoId(), nome:nome, valor:valor, por:quemSou()});
+  dados.fixas.push({id:novoId(), nome:nome, valor:valor, por:autor()});
   anotar("cadastrou a despesa fixa", nome + " de " + reais(valor));
   $("df-nome").value=""; $("df-valor").value=""; $("df-nome").focus();
   gravar(); tudo();
@@ -1384,7 +1473,7 @@ $("da-salvar").addEventListener("click", function(){
   if(!(valor > 0)) return erro("da-erro","Informe o valor.");
   if(!d) return erro("da-erro","Escolha a data.");
   erro("da-erro","");
-  dados.avulsas.push({id:novoId(), nome:nome, valor:valor, data:d, por:quemSou()});
+  dados.avulsas.push({id:novoId(), nome:nome, valor:valor, data:d, por:autor()});
   anotar("lançou o gasto", nome + " de " + reais(valor));
   $("da-nome").value=""; $("da-valor").value=""; $("da-nome").focus();
   gravar(); tudo();
@@ -1432,12 +1521,14 @@ document.addEventListener("click", function(ev){
   if((v = b.getAttribute("data-tirar")) !== null && v !== undefined){
     ficha.splice(parseInt(v,10),1); desenharFicha(); return;
   }
+  if((v = b.getAttribute("data-edit-insumo"))){ editarInsumo(v); return; }
   if((v = b.getAttribute("data-del-insumo"))){
     var usado = dados.produtos.some(function(p){
       return (p.ficha||[]).some(function(l){ return l.insumoId === v; });
     });
     if(usado && !confirm("Este insumo está em uma receita. Excluir mesmo assim?")) return;
-    anotar("excluiu o insumo", (insumoPor(v)||{nome:"?"}).nome);
+    anotar("excluiu o insumo", nomeInsumo(insumoPor(v)));
+    if(editandoInsumo === v) limparFormInsumo();
     excluir([v].concat(dados.compras.filter(function(c){ return c.insumoId === v; }).map(function(c){ return c.id; })));
     gravar(); tudo(); return;
   }
